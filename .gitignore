@@ -1,0 +1,22 @@
+node_modules/
+.env
+*.log
+dist/
+coverage/
+.DS_Store
+Thumbs.db
+*.pem
+*.key
+
+# IDE
+.vscode/
+.idea/
+
+# Docker
+postgres_data/
+redis_data/
+n8n_data/
+
+# Secrets
+*.secret
+*.credentials

@@ -1,0 +1,53 @@
+{
+  "name": "stratton-candidate-engine",
+  "version": "1.0.0",
+  "description": "AI-powered recruiting automation system for staffing agencies",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:watch": "vitest watch",
+    "migrate": "node database/migrate.js",
+    "migrate:rollback": "node database/rollback.js",
+    "seed": "node database/seeds/run.js",
+    "lint": "eslint src/ --ext .js",
+    "setup-client": "node scripts/setup-client.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "axios": "^1.7.0",
+    "bullmq": "^5.12.0",
+    "cors": "^2.8.5",
+    "crypto-js": "^4.2.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "google-auth-library": "^9.14.0",
+    "googleapis": "^144.0.0",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "node-cron": "^3.0.3",
+    "openai": "^4.67.0",
+    "pg": "^8.13.0",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "retell-sdk": "^4.0.0",
+    "twilio": "^5.3.0",
+    "uuid": "^10.0.0",
+    "yaml": "^2.5.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "eslint": "^9.11.0",
+    "nodemon": "^3.1.7",
+    "vitest": "^2.1.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

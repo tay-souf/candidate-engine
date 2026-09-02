@@ -1,0 +1,209 @@
+# ============================================
+# Client Configuration Template
+# Stratton Candidate Engine
+# ============================================
+# Copy this file and fill in the values for each new client
+
+client:
+  name: "Client Company Name"
+  slug: "client-slug"  # URL-safe identifier (lowercase, hyphens)
+  
+  contact:
+    name: "Primary Contact Name"
+    email: "contact@client.com"
+    phone: "+1234567890"
+  
+  settings:
+    timezone: "America/New_York"
+    max_daily_calls: 500
+    max_daily_sms: 1000
+    outreach_hours_start: "09:00"
+    outreach_hours_end: "18:00"
+    outreach_days: [1, 2, 3, 4, 5]  # Mon-Fri
+
+# ============================================
+# ATS Connection
+# ============================================
+ats:
+  platform: "bullhorn"  # bullhorn | avionte | ceipal | recruit_crm | salesforce
+  api_url: "https://rest.bullhornstaffing.com"
+  auth_type: "oauth2"   # oauth2 | api_key | basic | bearer
+  
+  credentials:
+    client_id: "YOUR_CLIENT_ID"
+    client_secret: "YOUR_CLIENT_SECRET"
+    # For CEIPAL: username, password, api_key
+    # For Recruit CRM: api_key
+    # For Salesforce: client_id, client_secret, is_sandbox
+  
+  # Field Mappings - map ATS fields to engine fields
+  field_mappings:
+    # Candidate fields
+    id: "id"
+    first_name: "firstName"
+    last_name: "lastName"
+    email: "email"
+    phone: "phone"
+    alt_phone: "phone2"
+    address: "address.address1"
+    city: "address.city"
+    state: "address.state"
+    zip_code: "address.zip"
+    title: "occupation"
+    skills: "skillSet"
+    certifications: "certifications"
+    experience: "experience"
+    pay_rate: "desiredPay"
+    availability: "availability"
+    source: "source"
+    
+    # Job order fields
+    job_id: "id"
+    job_title: "title"
+    job_description: "description"
+    job_location: "address"
+    job_type: "employmentType"
+    pay_min: "payRate"
+    pay_max: "salary"
+    required_skills: "skills"
+    openings: "numOpenings"
+    start_date: "startDate"
+  
+  sync:
+    auto_sync: true
+    sync_interval_minutes: 30
+    sync_candidates: true
+    sync_job_orders: true
+    candidate_status_filter: "Active"
+    job_status_filter: "Open"
+
+# ============================================
+# Outreach Configuration
+# ============================================
+outreach:
+  sms:
+    enabled: true
+    from_number: "+1234567890"  # Twilio phone number
+    templates:
+      initial: "initial_outreach"
+      follow_up_1: "follow_up_1"
+      follow_up_2: "follow_up_2"
+      final: "follow_up_final"
+    
+  voice:
+    enabled: true
+    retell_agent_id: "agent_xxxxx"
+    from_number: "+1234567890"
+    templates:
+      initial: "initial-outreach"
+      follow_up: "follow-up"
+      qualification: "qualification"
+  
+  sequence:
+    steps:
+      - channel: "sms"
+        delay_hours: 0
+        template: "initial_outreach"
+      - channel: "voice"
+        delay_hours: 4
+        template: "initial-outreach"
+      - channel: "sms"
+        delay_hours: 24
+        template: "follow_up_1"
+      - channel: "voice"
+        delay_hours: 48
+        template: "follow-up"
+      - channel: "sms"
+        delay_hours: 72
+        template: "follow_up_final"
+    
+    max_attempts_per_channel: 3
+    cooldown_hours: 24
+    stop_on_response: true
+    stop_on_opt_out: true
+
+# ============================================
+# Qualification Configuration
+# ============================================
+qualification:
+  passing_score: 70
+  
+  default_criteria:
+    - field: "experience_years"
+      operator: ">="
+      value: 1
+      weight: 0.25
+      required: false
+      label: "Minimum Experience"
+      
+    - field: "availability"
+      operator: "in"
+      value: ["immediate", "1_week", "2_weeks"]
+      weight: 0.25
+      required: true
+      label: "Availability"
+      
+    - field: "location_radius_miles"
+      operator: "<="
+      value: 50
+      weight: 0.20
+      required: false
+      label: "Location Proximity"
+      
+    - field: "certifications"
+      operator: "contains_any"
+      value: []
+      weight: 0.15
+      required: false
+      label: "Certifications"
+      
+    - field: "work_authorization"
+      operator: "in"
+      value: ["us_citizen", "green_card", "ead"]
+      weight: 0.15
+      required: true
+      label: "Work Authorization"
+
+# ============================================
+# Scheduling Configuration
+# ============================================
+scheduling:
+  calendar_type: "google"  # google | microsoft
+  default_duration_minutes: 30
+  buffer_minutes: 10
+  
+  recruiters:
+    - name: "Recruiter Name"
+      email: "recruiter@company.com"
+      calendar_id: "recruiter@company.com"
+      specialties: ["IT", "Engineering", "Healthcare"]
+      max_daily_interviews: 10
+      availability:
+        - day: "monday"
+          start: "09:00"
+          end: "17:00"
+        - day: "tuesday"
+          start: "09:00"
+          end: "17:00"
+        - day: "wednesday"
+          start: "09:00"
+          end: "17:00"
+        - day: "thursday"
+          start: "09:00"
+          end: "17:00"
+        - day: "friday"
+          start: "09:00"
+          end: "17:00"
+
+# ============================================
+# Notifications
+# ============================================
+notifications:
+  recruiter_notification:
+    enabled: true
+    channels: ["email", "sms"]
+    events:
+      - "candidate_qualified"
+      - "interview_scheduled"
+      - "candidate_opted_out"
+      - "campaign_completed"

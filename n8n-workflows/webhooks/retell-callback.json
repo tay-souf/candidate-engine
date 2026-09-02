@@ -1,0 +1,116 @@
+{
+  "name": "Retell AI Webhook Handler",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "retell-webhook",
+        "options": {}
+      },
+      "name": "Retell Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 240, 300 ],
+      "webhookId": "retell-call-events"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://engine-api:3000/api/webhooks/retell/call-status",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "call_id",
+              "value": "={{$json.body.call_id}}"
+            },
+            {
+              "name": "call_status",
+              "value": "={{$json.body.call_status}}"
+            },
+            {
+              "name": "transcript",
+              "value": "={{$json.body.transcript}}"
+            },
+            {
+              "name": "call_analysis",
+              "value": "={{JSON.stringify($json.body.call_analysis)}}"
+            },
+            {
+              "name": "metadata",
+              "value": "={{JSON.stringify($json.body.metadata)}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Forward to Engine API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [ 480, 300 ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.body.qualified}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Is Candidate Qualified?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [ 700, 300 ]
+    },
+    {
+      "parameters": {
+        "content": "Candidate Qualified! Trigger scheduling next."
+      },
+      "name": "Trigger Scheduling",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [ 940, 200 ]
+    }
+  ],
+  "connections": {
+    "Retell Webhook": {
+      "main": [
+        [
+          {
+            "node": "Forward to Engine API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Forward to Engine API": {
+      "main": [
+        [
+          {
+            "node": "Is Candidate Qualified?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Candidate Qualified?": {
+      "main": [
+        [
+          {
+            "node": "Trigger Scheduling",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
